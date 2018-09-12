@@ -8,7 +8,7 @@ get '/' do
   url = "https://api.exchangeratesapi.io/latest?base=#{base}"
   @currencies = %w(USD EUR GBP)
   target = get_data_from url
-  @rates = @target["rates"]
+  @rates = target["rates"]
 
   if request.xhr?
     format.json {
