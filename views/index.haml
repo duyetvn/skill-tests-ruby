@@ -1,0 +1,56 @@
+%html
+
+  %head
+    %link{:href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", :rel => "stylesheet"}/
+    %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"}
+    %script{:src => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"}
+  %body
+    %h1 Hello sinatra
+
+    %div{style: "clear: both"}
+    .form-group.col-sm-4
+      %label{:for => "sel1"} Select currency:
+      %select#base.form-control
+        - @currencies.each do |currency|
+          %option
+            = currency
+
+    #target.col-sm-6
+      %table.table.table-striped.table-bordered.table-hover{style: "width: 100%"}
+        %thead
+          %tr
+            %th Currency
+            %th Value
+        %tbody
+          - @rates.each do |key, value|
+            %tr
+              %td
+                = key
+              %td
+                = value
+
+:javascript
+  $("select#base").on("change", function(){
+    value = $(this).val()
+    $.ajax({
+      url: "https://api.exchangeratesapi.io/latest?base=" + value,
+      dataType: "json",
+      data: {base: value},
+      method: "GET",
+      error: function(){
+        console.log("Error")
+      },
+      success: function(response) {
+        $("#target table tbody").empty()
+        var rates = response.rates
+        var tbody = ""
+        $.each(rates, function(currency, value) {
+          tbody += "<tr>"
+          tbody += ("<td>" + currency + "</td>")
+          tbody += ("<td>" + value + "</td>")
+          tbody += ("</tr>")
+        });
+        $("#target table tbody").append(tbody)
+      }
+    })
+  })
